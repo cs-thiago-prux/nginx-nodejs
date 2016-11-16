@@ -1,0 +1,40 @@
+#Node.js Server
+nodejs:
+  image: nginx
+  container_name: nodejs
+  ports: 
+    - "80:80"
+  volumes: 
+    - ./html:/var/www
+  environment:
+    mysql_host: 172.16.0.200
+    mysql_user: root
+    mysql_pass: nodejs
+
+#MySQL Server
+mysql:
+  image: mysql
+  container_name: nodejs
+  volumes:
+    - ./database:/var/lib/mysql
+  environment:
+    MYSQL_ROOT_PASSWORD: nodejs
+    MYSQL_DATABASE: nodejs
+  services:
+    app:
+      image: busybox
+      command: ifconfig
+      networks:
+        app_net:
+          ipv4_address: 172.16.0.200
+
+      networks:
+        app_net:
+          driver: bridge
+          driver_opts:
+            com.docker.network.enable_ipv6: "false"
+          ipam:
+            driver: default
+            config:
+            - subnet: 172.16.0.0/24
+              gateway: 172.16.0.1
