@@ -2,14 +2,56 @@ version: '2'
 services:
 
 
+##MySQL Server
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    volumes:
+      - ./database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: nodejs
+      MYSQL_DATABASE: nodejs
+
 ##Node.js Server
   nodejs:
-    image: nginx
+    image: node:7.1.0
     container_name: nodejs
     ports: 
+      - "8080"
+#    volumes: 
+#      - ./nodejs:/var/www
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_POASS: nodejs
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+#Nginx Server
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
       - "80:80"
-    volumes: 
+    volumes:
       - ./html:/var/www
+    depends_on:
+      - mysql
+      - nodejs 
+    links:
+      - mysql
+      - nodejs
+
+##Node.js Server
+  nodejs:
+    image: node:7.1.0-alpine
+    container_name: nodejs
+#    ports: 
+#      - "80:80"
+#    volumes: 
+#      - ./nodejs:/var/www
     environment:
       mysql_host: mysql
       mysql_user: root
@@ -19,13 +61,3 @@ services:
     links:
       - mysql
 
-
-##MySQL Server
-  mysql:
-    image: mysql
-    container_name: mysql
-    volumes:
-      - ./database:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: nodejs
-      MYSQL_DATABASE: nodejs
