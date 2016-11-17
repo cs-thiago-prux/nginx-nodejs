@@ -1,7 +1,13 @@
 FROM node:7.1.0
 
-RUN npm install mysql && npm install express
+RUN mkdir /src
 
-#COPY nodesrc/* /src/
+RUN npm install mysql && npm install express && npm install http
 
-EXPOSE 8080
+WORKDIR /src
+#RUN npm install
+
+
+EXPOSE 3000
+
+CMD ["node", "app.js"]

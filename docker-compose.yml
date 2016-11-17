@@ -1,50 +1,49 @@
 version: '2'
 services:
 
+##MySQL Server
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    volumes:
+      - ./database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: nodejs
+      MYSQL_DATABASE: nodejs
 
-###MySQL Server
-#  mysql:
-#    image: mysql:latest
-#    container_name: mysql
-#    volumes:
-#      - ./database:/var/lib/mysql
-#    environment:
-#      MYSQL_ROOT_PASSWORD: nodejs
-#      MYSQL_DATABASE: nodejs
-#
-##Nginx Server
-#  nginx:
-#    image: nginx:latest
-#    container_name: nginx
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./html:/var/www
-#    depends_on:
-#      - mysql
-#      - nodejs 
-#    links:
-#      - mysql
-#      - nodejs
+#Nginx Server
+  nginx:
+    build: ./nginx/
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./html:/var/www
+    depends_on:
+      - mysql
+      - nodejs 
+    links:
+      - mysql
+      - nodejs
 
 
 ##Node.js Server
   nodejs:
-    image: csthiagoprux/node
+    build: .
     container_name: nodejs
     ports: 
-      - "8080"
+      - "3000"
     volumes: 
-      - ./nodesrc:/tmp
+      - "./nodesrc:/src"
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
-      MYSQL_POASS: nodejs
-#    depends_on:
-#      - mysql
-#    links:
-#      - mysql
-    command:
-      - node /tmp/app.js
+      MYSQL_PASS: nodejs
+    depends_on:
+      - mysql
+    links:
+      - mysql
+#    command:
+#      - node /home/tlp/gitprojects/nginx-nodejs/nodesrc/app.js
 #      - pwd
 #      - pwd 
